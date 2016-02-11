@@ -35,11 +35,15 @@ boundaryField
     	type            calculated;
 	value           $internalField;
     }
-    
-    defaultFaces
+    frontback
     {
-        type            empty;
-    }
+    	type            calculated;
+	value           $internalField;
+    }  
+    //defaultFaces
+    //{
+        //type            empty;
+    //}
 }
 
 // ************************************************************************* //

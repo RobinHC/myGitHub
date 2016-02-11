@@ -36,10 +36,9 @@ FoamFile
         nFaces          2000;
         startFace       1001;
     }
-    empty
+    frontback
     {
-        type            empty;
-        inGroups        1(empty);
+        type            patch;
         nFaces          2000;
         startFace       3001;
     }

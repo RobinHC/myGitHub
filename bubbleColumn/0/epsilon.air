@@ -34,11 +34,14 @@ boundaryField
     {
     	type            zeroGradient;  
     }
-    
-    defaultFaces
+    frontback
     {
-        type            empty;
-    }
+    	type            zeroGradient;  
+    }    
+    //defaultFaces
+    //{
+        //type            empty;
+    //}
 }
 
 // ************************************************************************* //

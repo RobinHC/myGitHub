@@ -40,6 +40,10 @@ boundaryField
     {
     	type               zeroGradient;
     }
+    frontback
+    {
+    	type               zeroGradient;
+    }
 }
    	
 // ************************************************************************* //
