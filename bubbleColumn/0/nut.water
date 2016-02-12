@@ -32,13 +32,13 @@ boundaryField
     }
     topbottom
     {
-    	type            calculated;
-	value           $internalField;
+    	type            empty;
+	//value           $internalField;
     }
     frontback
     {
-    	type            calculated;
-	value           $internalField;
+    	type            empty;
+	//value           $internalField;
     }  
     //defaultFaces
     //{

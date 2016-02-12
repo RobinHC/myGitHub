@@ -17,7 +17,7 @@ FoamFile
 // Fields to be probed. runTime modifiable!
 fields
 (
-    p
+    U.air
 );
 
 // Locations to be probed. runTime modifiable!

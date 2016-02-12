@@ -34,13 +34,13 @@ boundaryField
     }
     topbottom
     {
-    	type           fixedValue;
-	value          uniform 1.0e-7; 
+    	type             empty;
+	//value          uniform 1.0e-7; 
     }
     frontback
     {
-    	type           fixedValue;
-	value          uniform 1.0e-7; 
+    	type             empty;
+	//value          uniform 1.0e-7; 
     }
     //defaultFaces
     //{

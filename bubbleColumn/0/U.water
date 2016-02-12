@@ -31,11 +31,11 @@ boundaryField
     }
     topbottom
     {
-    	type               zeroGradient;
+    	type               empty;
     }
     frontback
     {
-    	type               zeroGradient;
+    	type               empty;
     }
 }
 
