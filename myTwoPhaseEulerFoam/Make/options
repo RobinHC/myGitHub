@@ -1,4 +1,8 @@
 EXE_INC = \
+    -IphaseChangeTwoPhaseMixtures/lnInclude \
+    -I$(LIB_SRC)/transportModels/twoPhaseMixture/lnInclude \	
+    -I$(LIB_SRC)/transportModels \		
+    -I$(LIB_SRC)/transportModels/incompressible/lnInclude \
     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
@@ -15,6 +19,10 @@ EXE_INC = \
     -I$(LIB_SRC)/sampling/lnInclude
 
 EXE_LIBS = \
+    -lphaseChangeTwoPhaseMixtures \
+    -ltwoPhaseMixture \
+    -ltwoPhaseProperties \
+    -lincompressibleTransportModels \ 
     -lfluidThermophysicalModels \
     -lspecie \
     -lturbulenceModels \
@@ -27,3 +35,6 @@ EXE_LIBS = \
     -lfvOptions \
     -lmeshTools \
     -lsampling
+
+
+

@@ -726,6 +726,11 @@ myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvPatchFie
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fixedGradientFvPatchFields.H
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fixedGradientFvPatchField.H
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fixedGradientFvPatchField.C
+myTwoPhaseEulerFoam.dep: phaseChangeTwoPhaseMixtures/lnInclude/phaseChangeTwoPhaseMixture.H
+myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/transportModels/incompressible/lnInclude/incompressibleTwoPhaseMixture.H
+myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/transportModels/incompressible/transportModel/transportModel.H
+myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/transportModels/incompressible/viscosityModels/viscosityModel/viscosityModel.H
+myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/transportModels/twoPhaseMixture/lnInclude/twoPhaseMixture.H
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCase.H
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H

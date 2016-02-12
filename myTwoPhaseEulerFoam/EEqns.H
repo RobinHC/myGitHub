@@ -82,4 +82,11 @@
     thermo2.correct();
     Info<< "min " << thermo2.T().name()
         << " " << min(thermo2.T()).value() << endl;
+   
+   //if (flowArea > flowArea[10])
+   //{
+   	Info<< "flowAreaGrad=" << flowArea/he2 << nl << endl; 
+   //}
+
+
 }

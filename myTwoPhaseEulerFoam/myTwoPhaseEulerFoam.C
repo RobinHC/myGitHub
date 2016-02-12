@@ -40,6 +40,8 @@ Description
 #include "fvIOoptionList.H"
 #include "fixedFluxPressureFvPatchScalarField.H"
 
+#include "phaseChangeTwoPhaseMixture.H"
+
 //#include "myWaveTransmissiveFvPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -70,8 +72,105 @@ int main(int argc, char *argv[])
 	 dimensionSet (1,-3,-1,0,0,0,0),
 	 scalar(0.000));
     
+    double celld; 
+    
+    double scaleFactor;
 
-    //label patchID = mesh.boundaryMesh().findPatchID("sideRight");//locate particular patch ID
+    double xDim;	
+
+    // declare the cell centre variable 
+    volScalarField flowArea // flow area of that specific cell 	
+    (
+     IOobject
+     (
+
+      "flowArea",
+      runTime.timeName(),
+      mesh
+
+     ),
+
+     mesh,
+     dimensionedScalar("0",dimensionSet (0,2,0,0,0),0)
+     
+    );	
+   				
+
+    // declare the gradient of area along flow direction
+    volScalarField flowAreaGrad 	
+    (
+     IOobject
+     (
+
+      "flowAreaGrad",
+      runTime.timeName(),
+      mesh
+
+     ),
+
+     mesh,
+     dimensionedScalar("0",dimensionSet (0,1,0,0,0),0)
+     
+    );	
+    
+    // obtain cell length 
+    const faceList & ff = mesh.faces();
+    const pointField & pp = mesh.points();
+
+    forAll( mesh.C(), celli)
+    {
+    	const cell & cc = mesh.cells()[celli];
+	labelList pLabels(cc.labels(ff));
+	pointField pLocal(pLabels.size(), vector::zero);
+
+	forAll (pLabels, pointi)
+	{
+		pLocal[pointi] = pp[pLabels[pointi]];
+	}
+
+	xDim = Foam::max(pLocal & vector(1,0,0)) - Foam::min(pLocal & vector(1,0,0));
+
+    }
+
+
+    // assign flowarea value to the cell centre 
+    forAll(flowArea,celli)
+    {
+    	flowArea[celli] = scalar(1); // initialisation
+    }
+
+    forAll(flowArea,celli)
+    {
+    	if (celli >= 900)
+	{
+		celld = (double) celli;  
+		scaleFactor = Foam::tanh((celld-899.0)/50.0);	
+		flowArea[celli] = flowArea[899]-flowArea[899]*scalar(scaleFactor);	
+	}
+    	
+    }
+
+    // assign flowAreaGrad to each cell centre
+    forAll(flowAreaGrad, celli)
+    {
+	if (celli < 900)    
+	{
+		flowAreaGrad[celli] = scalar(0); 
+    	}
+    	else if (celli >= 900 && celli < 1000) 
+	{
+		flowAreaGrad[celli] = (flowArea[celli+1] - flowArea[celli])/scalar(xDim);
+	}
+	else
+	{	
+		flowAreaGrad[celli] = scalar(0);
+	}	
+    }
+	
+    //label patchID = mesh.boundaryMesh().findPatchID("sideLeft");//locate particular patch ID
+
+    //Info<< "patchID" << patchID << nl << endl; 
+    
     //const polyPatch& cPatch = mesh.boundaryMesh()[patchID];
     //patch().magSf()[patchID] = patch().magSf()[patchID]*scalar(0.1);				
 
@@ -99,13 +198,13 @@ int main(int argc, char *argv[])
             volScalarField contErr1
             (
                 fvc::ddt(alpha1, rho1) + fvc::div(alphaRhoPhi1)
-              - (fvOptions(alpha1, rho1)&rho1)+gamma_LV-gamma_VL // add mass transfer source term here 
+              - (fvOptions(alpha1, rho1)&rho1)+gamma_LV-gamma_VL // fvOptions are the runtime semi-implicit source term 
             );
 
             volScalarField contErr2
             (
                 fvc::ddt(alpha2, rho2) + fvc::div(alphaRhoPhi2)
-               - (fvOptions(alpha2, rho2)&rho2)-gamma_LV+gamma_VL // add mass transfer source term here 
+               - (fvOptions(alpha2, rho2)&rho2)-gamma_LV+gamma_VL // 
             );
 
 
@@ -127,8 +226,15 @@ int main(int argc, char *argv[])
         }
 
         #include "write.H"
+	
+	//const volScalarField& test = alpha1_.db().lookupObject<volScalarField>("flowAreaGrad");
 
-        Info<< "ExecutionTime = "
+
+   	//Info<< "flowAreaGrad=" << test << nl << endl; 
+   	//Info<< "flowAreaGrad=" << flowArea[1200] << nl << endl; 
+        //Info<< "cellLength=" << xDim << nl << endl;
+	
+	Info<< "ExecutionTime = "
             << runTime.elapsedCpuTime()
             << " s\n\n" << endl;
     }
