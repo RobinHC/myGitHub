@@ -113,6 +113,22 @@ int main(int argc, char *argv[])
      
     );	
     
+    // declare the area part of the source term
+    volScalarField areaSource 	
+    (
+     IOobject
+     (
+
+      "areaSource",
+      runTime.timeName(),
+      mesh
+
+     ),
+
+     mesh,
+     dimensionedScalar("0",dimensionSet (0,-1,0,0,0),0)
+     
+    );	
     // obtain cell length 
     const faceList & ff = mesh.faces();
     const pointField & pp = mesh.points();
@@ -136,16 +152,20 @@ int main(int argc, char *argv[])
     // assign flowarea value to the cell centre 
     forAll(flowArea,celli)
     {
-    	flowArea[celli] = scalar(1); // initialisation
+    	flowArea[celli] = 1; // initialisation
     }
 
     forAll(flowArea,celli)
     {
-    	if (celli >= 900)
+    	if (celli >= 900 && celli < 1000)
 	{
 		celld = (double) celli;  
-		scaleFactor = Foam::tanh((celld-899.0)/50.0);	
+		scaleFactor = Foam::tanh((celld-899.0)/100.0);	
 		flowArea[celli] = flowArea[899]-flowArea[899]*scalar(scaleFactor);	
+	}
+	else
+	{
+		flowArea[celli] = 1;
 	}
     	
     }
@@ -155,7 +175,7 @@ int main(int argc, char *argv[])
     {
 	if (celli < 900)    
 	{
-		flowAreaGrad[celli] = scalar(0); 
+		flowAreaGrad[celli] = 0; 
     	}
     	else if (celli >= 900 && celli < 1000) 
 	{
@@ -163,10 +183,26 @@ int main(int argc, char *argv[])
 	}
 	else
 	{	
-		flowAreaGrad[celli] = scalar(0);
+		flowAreaGrad[celli] = 0;
 	}	
     }
 	
+    // assign areaSource to each cell centre
+    forAll(areaSource, celli)
+    {
+	if (celli < 900)    
+	{
+		areaSource[celli] = 0; 
+    	}
+    	else if (celli >= 900 && celli < 1000) 
+	{
+		areaSource[celli] = flowAreaGrad[celli]/flowArea[celli];
+	}
+	else
+	{	
+		areaSource[celli] = 0;
+	}	
+    }
     //label patchID = mesh.boundaryMesh().findPatchID("sideLeft");//locate particular patch ID
 
     //Info<< "patchID" << patchID << nl << endl; 
@@ -198,14 +234,16 @@ int main(int argc, char *argv[])
             volScalarField contErr1
             (
                 fvc::ddt(alpha1, rho1) + fvc::div(alphaRhoPhi1)
-              - (fvOptions(alpha1, rho1)&rho1)+gamma_LV-gamma_VL // fvOptions are the runtime semi-implicit source term 
-            );
+              - (fvOptions(alpha1, rho1)&rho1)                      //+gamma_LV-gamma_VL // fvOptions are the runtime semi-implicit source term 
+              + rho1*mag(U1)*areaSource*alpha1	
+	    );
 
             volScalarField contErr2
             (
                 fvc::ddt(alpha2, rho2) + fvc::div(alphaRhoPhi2)
-               - (fvOptions(alpha2, rho2)&rho2)-gamma_LV+gamma_VL // 
-            );
+               - (fvOptions(alpha2, rho2)&rho2)                    //-gamma_LV+gamma_VL // 
+               + rho2*mag(U2)*areaSource*alpha2	 
+	    );
 
 
             #include "UEqns.H"
@@ -230,9 +268,9 @@ int main(int argc, char *argv[])
 	//const volScalarField& test = alpha1_.db().lookupObject<volScalarField>("flowAreaGrad");
 
 
-   	//Info<< "flowAreaGrad=" << test << nl << endl; 
-   	//Info<< "flowAreaGrad=" << flowArea[1200] << nl << endl; 
-        //Info<< "cellLength=" << xDim << nl << endl;
+   	Info<< "flowArea=" << flowArea[999] << nl << endl; 
+   	//Info<< "flowAreaGrad=" << flowAreaGrad[1000] << nl << endl; 
+        //Info<< "areaSource=" << areaSource[1000] << nl << endl;
 	
 	Info<< "ExecutionTime = "
             << runTime.elapsedCpuTime()

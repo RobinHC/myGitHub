@@ -32,6 +32,7 @@ volScalarField dragCoeff(fluid.dragCoeff());
               - DDtU2
             )
           + fvOptions(alpha1, rho1, U1)
+	  - rho1*U1*mag(U1)*areaSource*alpha1	 // quasi-one-dimension source term
         );
         U1Eqn.relax();
         U1Eqn += fvm::Sp(dragCoeff, U1);
@@ -57,9 +58,17 @@ volScalarField dragCoeff(fluid.dragCoeff());
               - DDtU1
             )
           + fvOptions(alpha2, rho2, U2)
+	  - rho2*U2*mag(U2)*areaSource*alpha2             // quasi-one-dimensional source term
         );
         U2Eqn.relax();
         U2Eqn += fvm::Sp(dragCoeff, U2);
         fvOptions.constrain(U2Eqn);
     }
+
+
+	//Info << "sourceTerm=" << rho2*U2*mag(U2)*areaSource*alpha2 << nl << endl;
 }
+
+
+
+

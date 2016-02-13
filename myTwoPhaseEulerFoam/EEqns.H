@@ -36,6 +36,7 @@
       + heatTransferCoeff*he1/Cpv1
       - fvm::Sp(heatTransferCoeff/Cpv1, he1)
       + fvOptions(alpha1, rho1, he1)
+      - rho1*mag(U1)*he1*areaSource*alpha1     //quasi-one-dimensional flow source term
     );
 
     fvScalarMatrix he2Eqn
@@ -67,6 +68,7 @@
       + heatTransferCoeff*he2/Cpv2
       - fvm::Sp(heatTransferCoeff/Cpv2, he2)
       + fvOptions(alpha2, rho2, he2)
+      - rho2*mag(U2)*he2*areaSource*alpha2   // quasi-one-dimensional soure term
     );
 
     fvOptions.constrain(he1Eqn);
@@ -85,7 +87,7 @@
    
    //if (flowArea > flowArea[10])
    //{
-   	Info<< "flowAreaGrad=" << flowArea/he2 << nl << endl; 
+   	//Info<< "flowAreaGrad=" << flowArea/he2 << nl << endl; 
    //}
 
 
