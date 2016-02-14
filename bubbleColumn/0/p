@@ -34,7 +34,7 @@ boundaryField
         gamma           1.4;
         fieldInf        100000;
         lInf            10;
-        value           uniform 100000;
+        value           uniform 5e+06;
     }
     topbottom
     {

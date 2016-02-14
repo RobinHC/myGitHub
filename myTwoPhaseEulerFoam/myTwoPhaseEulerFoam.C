@@ -71,6 +71,9 @@ int main(int argc, char *argv[])
  	("gamma_LV",
 	 dimensionSet (1,-3,-1,0,0,0,0),
 	 scalar(0.000));
+
+    //constant and constant vectors
+    vector unity(1,0,0);		
     
     double celld; 
     
@@ -78,6 +81,22 @@ int main(int argc, char *argv[])
 
     double xDim;	
 
+    // declare cell-to-cell length
+    volScalarField xDimDim // cell-to-cell length	
+    (
+     IOobject
+     (
+
+      "xDimDim",
+      runTime.timeName(),
+      mesh
+
+     ),
+
+     mesh,
+     dimensionedScalar("0",dimensionSet (0,1,0,0,0),0)
+     
+    );	
     // declare the cell centre variable 
     volScalarField flowArea // flow area of that specific cell 	
     (
@@ -129,11 +148,64 @@ int main(int argc, char *argv[])
      dimensionedScalar("0",dimensionSet (0,-1,0,0,0),0)
      
     );	
-    // obtain cell length 
+    
+    // declare bulk density 
+    volScalarField rho_bulk 	
+    (
+     IOobject
+     (
+
+      "rho_bulk",
+      runTime.timeName(),
+      mesh
+
+     ),
+
+     mesh,
+     dimensionedScalar("0",dimensionSet (1,-3,0,0,0),0)
+     
+    );	
+    
+    // declare bulk velocity 
+    volScalarField U_bulk 	
+    (
+     IOobject
+     (
+
+      "U_bulk",
+      runTime.timeName(),
+      mesh
+
+     ),
+
+     mesh,
+     dimensionedScalar("0",dimensionSet (0,1,-1,0,0),0)
+     
+    );	
+   
+    // declare bulk enthalpy 
+    volScalarField he_bulk 	
+    (
+     IOobject
+     (
+
+      "he_bulk",
+      runTime.timeName(),
+      mesh
+
+     ),
+
+     mesh,
+     dimensionedScalar("0",dimensionSet (0,2,-2,0,0),0)
+     
+    );	
+
+
+     // obtain cell length 
     const faceList & ff = mesh.faces();
     const pointField & pp = mesh.points();
 
-    forAll( mesh.C(), celli)
+    forAll(mesh.C(), celli)
     {
     	const cell & cc = mesh.cells()[celli];
 	labelList pLabels(cc.labels(ff));
@@ -145,7 +217,7 @@ int main(int argc, char *argv[])
 	}
 
 	xDim = Foam::max(pLocal & vector(1,0,0)) - Foam::min(pLocal & vector(1,0,0));
-
+	xDimDim[celli] = scalar(xDim);
     }
 
 
@@ -157,15 +229,15 @@ int main(int argc, char *argv[])
 
     forAll(flowArea,celli)
     {
-    	if (celli >= 900 && celli < 1000)
+    	if (celli >= 900 && celli < 999)
 	{
 		celld = (double) celli;  
-		scaleFactor = Foam::tanh((celld-899.0)/100.0);	
+		scaleFactor = Foam::tanh((celld-899.0)/80.0);	
 		flowArea[celli] = flowArea[899]-flowArea[899]*scalar(scaleFactor);	
 	}
-	else
+	else if (celli >= 999)
 	{
-		flowArea[celli] = 1;
+		flowArea[celli] = flowArea[998];
 	}
     	
     }
@@ -177,11 +249,11 @@ int main(int argc, char *argv[])
 	{
 		flowAreaGrad[celli] = 0; 
     	}
-    	else if (celli >= 900 && celli < 1000) 
+    	else if (celli >= 900 && celli < 999) 
 	{
-		flowAreaGrad[celli] = (flowArea[celli+1] - flowArea[celli])/scalar(xDim);
+		flowAreaGrad[celli] = -1.0* (flowArea[celli+1] - flowArea[celli])/xDimDim[celli];
 	}
-	else
+	else if (celli >= 999)
 	{	
 		flowAreaGrad[celli] = 0;
 	}	
@@ -194,11 +266,11 @@ int main(int argc, char *argv[])
 	{
 		areaSource[celli] = 0; 
     	}
-    	else if (celli >= 900 && celli < 1000) 
+    	else if (celli >= 900 && celli < 999) 
 	{
-		areaSource[celli] = flowAreaGrad[celli]/flowArea[celli];
+		areaSource[celli] = 0;//flowAreaGrad[celli]/flowArea[celli];
 	}
-	else
+	else if (celli >= 999)
 	{	
 		areaSource[celli] = 0;
 	}	
@@ -231,22 +303,28 @@ int main(int argc, char *argv[])
             fluid.solve();
             fluid.correct();
 
+	    U_bulk = mag(alpha1*U1+alpha2*U2);
+	    rho_bulk = alpha1*rho1+alpha2*rho2;						
+		
             volScalarField contErr1
             (
                 fvc::ddt(alpha1, rho1) + fvc::div(alphaRhoPhi1)
               - (fvOptions(alpha1, rho1)&rho1)                      //+gamma_LV-gamma_VL // fvOptions are the runtime semi-implicit source term 
-              + rho1*mag(U1)*areaSource*alpha1	
+              + rho_bulk*U_bulk*areaSource*alpha1	
 	    );
 
             volScalarField contErr2
             (
                 fvc::ddt(alpha2, rho2) + fvc::div(alphaRhoPhi2)
                - (fvOptions(alpha2, rho2)&rho2)                    //-gamma_LV+gamma_VL // 
-               + rho2*mag(U2)*areaSource*alpha2	 
+               + rho_bulk*U_bulk*areaSource*alpha2	 
 	    );
 
-
+			
             #include "UEqns.H"
+
+	    U_bulk = mag(alpha1*U1+alpha2*U2);                     // update velocity field                   				
+       
             #include "EEqns.H"
 
             // --- Pressure corrector loop

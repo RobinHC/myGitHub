@@ -18,6 +18,8 @@ FoamFile
 fields
 (
     U.air
+    p	
+    T.air	
 );
 
 // Locations to be probed. runTime modifiable!

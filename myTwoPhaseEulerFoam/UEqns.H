@@ -13,8 +13,11 @@ volScalarField dragCoeff(fluid.dragCoeff());
     volVectorField wallLubricationForce(fluid.wallLubricationForce());
     volVectorField turbulentDispersionForce(fluid.turbulentDispersionForce());
 
+    rho_bulk = alpha1*rho1+alpha2*rho2;
+    U_bulk = mag(alpha1*U1+alpha2*U2);
+    
     {
-        U1Eqn =
+	U1Eqn =
         (
             fvm::ddt(alpha1, rho1, U1) + fvm::div(alphaRhoPhi1, U1)
           - fvm::Sp(contErr1, U1)
@@ -32,7 +35,7 @@ volScalarField dragCoeff(fluid.dragCoeff());
               - DDtU2
             )
           + fvOptions(alpha1, rho1, U1)
-	  - rho1*U1*mag(U1)*areaSource*alpha1	 // quasi-one-dimension source term
+	  - rho_bulk*unity*U_bulk*U_bulk*areaSource*alpha1	 // quasi-one-dimension source term
         );
         U1Eqn.relax();
         U1Eqn += fvm::Sp(dragCoeff, U1);
@@ -58,7 +61,7 @@ volScalarField dragCoeff(fluid.dragCoeff());
               - DDtU1
             )
           + fvOptions(alpha2, rho2, U2)
-	  - rho2*U2*mag(U2)*areaSource*alpha2             // quasi-one-dimensional source term
+	  - rho_bulk*unity*U_bulk*U_bulk*areaSource*alpha2            // quasi-one-dimensional source term
         );
         U2Eqn.relax();
         U2Eqn += fvm::Sp(dragCoeff, U2);
@@ -66,7 +69,7 @@ volScalarField dragCoeff(fluid.dragCoeff());
     }
 
 
-	//Info << "sourceTerm=" << rho2*U2*mag(U2)*areaSource*alpha2 << nl << endl;
+	//Info << "sourceTerm=" << rho_bulk*U_bulk*(alpha1*U1+alpha2*U2)*areaSource*alpha1 << nl << endl;
 }
 
 

@@ -6,6 +6,10 @@
     volScalarField Cpv2("Cpv2", thermo2.Cpv());
 
     volScalarField heatTransferCoeff(fluid.heatTransferCoeff());
+    
+
+    he_bulk = he1*alpha1+he2*alpha2;	// define bulk enthalpy
+
 
     fvScalarMatrix he1Eqn
     (
@@ -36,7 +40,7 @@
       + heatTransferCoeff*he1/Cpv1
       - fvm::Sp(heatTransferCoeff/Cpv1, he1)
       + fvOptions(alpha1, rho1, he1)
-      - rho1*mag(U1)*he1*areaSource*alpha1     //quasi-one-dimensional flow source term
+      - rho_bulk*U_bulk*he_bulk*areaSource*alpha1     //quasi-one-dimensional flow source term
     );
 
     fvScalarMatrix he2Eqn
@@ -68,7 +72,7 @@
       + heatTransferCoeff*he2/Cpv2
       - fvm::Sp(heatTransferCoeff/Cpv2, he2)
       + fvOptions(alpha2, rho2, he2)
-      - rho2*mag(U2)*he2*areaSource*alpha2   // quasi-one-dimensional soure term
+      - rho_bulk*U_bulk*he_bulk*areaSource*alpha2   // quasi-one-dimensional soure term
     );
 
     fvOptions.constrain(he1Eqn);
