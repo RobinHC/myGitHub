@@ -352,8 +352,8 @@ int main(int argc, char *argv[])
 	//const volScalarField& test = alpha1_.db().lookupObject<volScalarField>("flowAreaGrad");
 
 
-   	Info<< "flowArea=" << celln << nl << endl; 
-   	Info<< "flowAreaGrad=" << flowArea[998] << nl << endl; 
+   	Info<< "flowArea=" << flowArea[999] << nl << endl; 
+   	//Info<< "flowAreaGrad=" << flowArea[998] << nl << endl; 
         //Info<< "areaSource=" << flowArea[997] << nl << endl;
 
 
