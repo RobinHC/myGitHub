@@ -81,6 +81,8 @@ int main(int argc, char *argv[])
 
     double xDim;	
 
+    int celln;
+
     // declare cell-to-cell length
     volScalarField xDimDim // cell-to-cell length	
     (
@@ -113,7 +115,7 @@ int main(int argc, char *argv[])
      dimensionedScalar("0",dimensionSet (0,2,0,0,0),0)
      
     );	
-   				
+   
 
     // declare the gradient of area along flow direction
     volScalarField flowAreaGrad 	
@@ -222,22 +224,25 @@ int main(int argc, char *argv[])
 
 
     // assign flowarea value to the cell centre 
+    // obtain number of cells as well
+    celln = -1;
     forAll(flowArea,celli)
     {
     	flowArea[celli] = 1; // initialisation
+    	celln += 1;
     }
 
     forAll(flowArea,celli)
     {
-    	if (celli >= 900 && celli < 999)
+    	if (celli >= (celln-100) && celli < celln)
 	{
-		celld = (double) celli;  
-		scaleFactor = Foam::tanh((celld-899.0)/80.0);	
-		flowArea[celli] = flowArea[899]-flowArea[899]*scalar(scaleFactor);	
+		celld = (double) (celli-(celln-100))/100;  
+		scaleFactor = Foam::tanh(celld);	
+		flowArea[celli] = flowArea[(celln-100)]-flowArea[(celln-100)]*scalar(scaleFactor);	
 	}
-	else if (celli >= 999)
+	else if (celli >= celln)
 	{
-		flowArea[celli] = flowArea[998];
+		flowArea[celli] = flowArea[(celln-1)];
 	}
     	
     }
@@ -245,15 +250,15 @@ int main(int argc, char *argv[])
     // assign flowAreaGrad to each cell centre
     forAll(flowAreaGrad, celli)
     {
-	if (celli < 900)    
+	if (celli < (celln-100))    
 	{
 		flowAreaGrad[celli] = 0; 
     	}
-    	else if (celli >= 900 && celli < 999) 
+    	else if (celli >= (celln-100) && celli < celln) 
 	{
-		flowAreaGrad[celli] = -1.0* (flowArea[celli+1] - flowArea[celli])/xDimDim[celli];
+		flowAreaGrad[celli] = (flowArea[celli+1] - flowArea[celli])/xDimDim[celli];
 	}
-	else if (celli >= 999)
+	else if (celli >= celln)
 	{	
 		flowAreaGrad[celli] = 0;
 	}	
@@ -262,15 +267,15 @@ int main(int argc, char *argv[])
     // assign areaSource to each cell centre
     forAll(areaSource, celli)
     {
-	if (celli < 900)    
+	if (celli < (celln-100))    
 	{
 		areaSource[celli] = 0; 
     	}
-    	else if (celli >= 900 && celli < 999) 
+    	else if (celli >= (celln-100) && celli < celln) 
 	{
-		areaSource[celli] = 0;//flowAreaGrad[celli]/flowArea[celli];
+		areaSource[celli] = flowAreaGrad[celli]/flowArea[celli];
 	}
-	else if (celli >= 999)
+	else if (celli >= celln)
 	{	
 		areaSource[celli] = 0;
 	}	
@@ -305,19 +310,20 @@ int main(int argc, char *argv[])
 
 	    U_bulk = mag(alpha1*U1+alpha2*U2);
 	    rho_bulk = alpha1*rho1+alpha2*rho2;						
-		
+
+	    
             volScalarField contErr1
             (
                 fvc::ddt(alpha1, rho1) + fvc::div(alphaRhoPhi1)
-              - (fvOptions(alpha1, rho1)&rho1)                      //+gamma_LV-gamma_VL // fvOptions are the runtime semi-implicit source term 
-              + rho_bulk*U_bulk*areaSource*alpha1	
+              - (fvOptions(alpha1, rho1)&rho1)                       //+gamma_LV-gamma_VL // fvOptions are the runtime semi-implicit source term 
+              + alpha1*rho1*mag(U1)*areaSource	
 	    );
 
             volScalarField contErr2
             (
                 fvc::ddt(alpha2, rho2) + fvc::div(alphaRhoPhi2)
                - (fvOptions(alpha2, rho2)&rho2)                    //-gamma_LV+gamma_VL // 
-               + rho_bulk*U_bulk*areaSource*alpha2	 
+               + alpha2*rho2*mag(U2)*areaSource	 
 	    );
 
 			
@@ -346,10 +352,36 @@ int main(int argc, char *argv[])
 	//const volScalarField& test = alpha1_.db().lookupObject<volScalarField>("flowAreaGrad");
 
 
-   	Info<< "flowArea=" << flowArea[999] << nl << endl; 
-   	//Info<< "flowAreaGrad=" << flowAreaGrad[1000] << nl << endl; 
-        //Info<< "areaSource=" << areaSource[1000] << nl << endl;
-	
+   	Info<< "flowArea=" << celln << nl << endl; 
+   	Info<< "flowAreaGrad=" << flowArea[998] << nl << endl; 
+        //Info<< "areaSource=" << flowArea[997] << nl << endl;
+
+
+// loop over all cells:
+	//forAll(mesh.C(), cellI) 
+	//{
+		//Info << "******* CellID: " << cellI << "*******"<< endl;
+
+		//Getting list of all faces of current cell
+		//const labelList& faces = mesh.cells()[cellI];
+
+		//loop over all faces of current cell
+		//forAll( faces, faceI )
+		//{   
+			//if (mesh.isInternalFace(faces[faceI]))
+			//{   
+				//Info << "internal faceI: " << faceI << "    mesh.Sf()[faceI]: " << -mesh.Sf()[faceI] << "    mesh.magSf()[faceI]: " << mesh.magSf()[faceI] << endl;
+			//}   
+			//else
+			//{   
+				//Info << "boundary faceI: " << faceI << "    mesh.Sf()[faceI]: " << -mesh.Sf()[faceI] << "    mesh.magSf()[faceI]: " << mesh.magSf()[faceI] << endl;
+			//}   
+
+		//} //move on to next face  
+		//Info << " " << endl;
+	//}//move on to next cell 
+
+
 	Info<< "ExecutionTime = "
             << runTime.elapsedCpuTime()
             << " s\n\n" << endl;
