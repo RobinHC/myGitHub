@@ -1,1 +1,1 @@
-../myIcoPolynomial.C
+../myIcoPolynomial/myIcoPolynomial.C

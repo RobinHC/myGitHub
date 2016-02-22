@@ -52,6 +52,20 @@
 
 # 4 "<command-line>" 2
 # 1 "files"
-./myRhoThermos.C
+./basicThermo/basicThermo.C
+./fluidThermo/fluidThermo.C
+
+./psiThermo/psiThermo.C
+./psiThermo/psiThermos.C
+
+./rhoThermo/rhoThermo.C
+myRhoThermos.C
+
+derivedFvPatchFields/fixedEnergy/fixedEnergyFvPatchScalarField.C
+derivedFvPatchFields/gradientEnergy/gradientEnergyFvPatchScalarField.C
+derivedFvPatchFields/mixedEnergy/mixedEnergyFvPatchScalarField.C
+
+derivedFvPatchFields/energyJump/energyJump/energyJumpFvPatchScalarField.C
+derivedFvPatchFields/energyJump/energyJumpAMI/energyJumpAMIFvPatchScalarField.C
 
 LIB = $(FOAM_USER_LIBBIN)/libmyRhoThermo

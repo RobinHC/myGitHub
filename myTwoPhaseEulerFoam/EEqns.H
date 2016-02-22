@@ -91,7 +91,7 @@
    
    //if (flowArea > flowArea[10])
    //{
-   	//Info<< "flowAreaGrad=" << flowArea/he2 << nl << endl; 
+   	//Info<< "he1" << he1 << nl << endl; 
    //}
 
 

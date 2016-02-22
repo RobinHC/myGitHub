@@ -25,7 +25,7 @@ stopAt          endTime;
 
 endTime         1.0;
 
-deltaT          0.0001;
+deltaT          0.001;
 
 writeControl    runTime;
 
@@ -52,8 +52,9 @@ maxCo           0.5;
 maxDeltaT       1;
 
 //add customized boundary conditions
-libs ("libuserBCs.so");
-//
+libs ("libuserBCs.so" "libmyRhoThermo.so" "librefprop.so.9.12");
+//add different thermo type and EoS
+//libs ("libmyRhoThermo.so");
 
 functions
 {

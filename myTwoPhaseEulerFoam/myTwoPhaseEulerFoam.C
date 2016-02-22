@@ -42,6 +42,9 @@ Description
 
 #include "phaseChangeTwoPhaseMixture.H"
 
+#define REFPROP_IMPLEMENTATION
+#include "REFPROP_lib.h"
+#undef REFPROP_IMPLEMENTATION
 //#include "myWaveTransmissiveFvPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -60,7 +63,7 @@ int main(int argc, char *argv[])
     #include "readTimeControls.H"
     #include "CourantNos.H"
     #include "setInitialDeltaT.H"
-    
+		
     //for testing only with a constant interpahse mass transfer term 	    	
     dimensionedScalar gamma_LV
  	("gamma_LV",
@@ -202,6 +205,22 @@ int main(int argc, char *argv[])
      
     );	
 
+    // declare volume weighted compressibility 
+    volScalarField psi_bulk 	
+    (
+     IOobject
+     (
+
+      "psi_bulk",
+      runTime.timeName(),
+      mesh
+
+     ),
+
+     mesh,
+     dimensionedScalar("0",dimensionSet (0,-2,2,0,0),0)
+     
+    );	
 
      // obtain cell length 
     const faceList & ff = mesh.faces();
@@ -234,12 +253,18 @@ int main(int argc, char *argv[])
 
     forAll(flowArea,celli)
     {
-    	if (celli >= (celln-100) && celli < celln)
+    	if (celli >= (celln-100) && celli < (celln))
 	{
 		celld = (double) (celli-(celln-100))/100;  
 		scaleFactor = Foam::tanh(celld);	
 		flowArea[celli] = flowArea[(celln-100)]-flowArea[(celln-100)]*scalar(scaleFactor);	
 	}
+	//else if (celli > (celln-50) && celli < celln)
+	//{
+		//celld = (double) (celli-(celln-50))/100;
+		//scaleFactor = Foam::tanh(celld);
+		//flowArea[celli] =flowArea[(celln-50)]+5.0*scalar(scaleFactor);//flowArea[(celln-50)]*scalar(scaleFactor);
+	//}
 	else if (celli >= celln)
 	{
 		flowArea[celli] = flowArea[(celln-1)];
@@ -287,6 +312,18 @@ int main(int argc, char *argv[])
     //const polyPatch& cPatch = mesh.boundaryMesh()[patchID];
     //patch().magSf()[patchID] = patch().magSf()[patchID]*scalar(0.1);				
 
+    // Load the shared library
+    //-------------------------------------------------------------------
+    //std::string err;
+    //bool loaded_REFPROP = load_REFPROP(err);
+    //long ierr = 0, nc = 1; 
+    //char herr[255], hfld[] = "CO2.FLD", hhmx[] = "HMX.BNC", href[] = "DEF";
+
+    //SETUPdll(nc,hfld,hhmx,href,ierr,herr,10000,255,3,255);
+
+    //Info<< "error massage:" << herr << nl << endl; 
+    //-------------------------------------------------------------------	
+
     pimpleControl pimple(mesh);
       
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -299,6 +336,20 @@ int main(int argc, char *argv[])
         #include "CourantNos.H"
         #include "setDeltaT.H"
 
+
+	//Thermodynamic calculations
+	//{
+		//long ierr = 0;
+		//char herr[255];
+		//double z[] = {1.0}, x[] = {1.0}, y[] = {1.0}, T= 300, p = 1010.325, d = NULL, dl = NULL, dv = NULL, h = NULL, s = NULL, u = NULL, cp = NULL, cv = NULL, q = NULL, w = NULL;
+		//TPFLSHdll(T, p, z, d, dl, dv, x, y, h,s,u,cp,cv,w,q,ierr,herr,255);
+	
+	
+       	//Info<< "enthalpy = " << w << nl << endl; 
+	
+	//}
+
+
         runTime++;
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
@@ -310,7 +361,7 @@ int main(int argc, char *argv[])
 
 	    U_bulk = mag(alpha1*U1+alpha2*U2);
 	    rho_bulk = alpha1*rho1+alpha2*rho2;						
-
+            psi_bulk =1.0/(alpha1/thermo1.psi()+alpha2/thermo2.psi());		 
 	    
             volScalarField contErr1
             (
@@ -352,9 +403,9 @@ int main(int argc, char *argv[])
 	//const volScalarField& test = alpha1_.db().lookupObject<volScalarField>("flowAreaGrad");
 
 
-   	Info<< "flowArea=" << flowArea[999] << nl << endl; 
-   	//Info<< "flowAreaGrad=" << flowArea[998] << nl << endl; 
-        //Info<< "areaSource=" << flowArea[997] << nl << endl;
+        Info<< "flowArea=" << flowArea[950] << nl << endl; 
+   	//Info<< "flowAreaGrad=" << flowAreaGrad[950] << nl << endl; 
+        //Info<< "areaSource=" << areaSource[950] << nl << endl;
 
 
 // loop over all cells:

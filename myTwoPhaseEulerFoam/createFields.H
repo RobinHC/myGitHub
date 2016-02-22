@@ -18,7 +18,7 @@
     surfaceScalarField& alphaPhi2 = phase2.alphaPhi();
     surfaceScalarField& alphaRhoPhi2 = phase2.alphaRhoPhi();
 
-    surfaceScalarField& phi = fluid.phi();
+    surfaceScalarField& phi = fluid.phi(); //volumetric average between phi1 and phi2 i.e. phi => alpha1*phi1+alpha2*phi2 
 
     dimensionedScalar pMin
     (

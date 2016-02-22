@@ -47,10 +47,17 @@ License
 //------------------------------
 #include "icoPolynomial.H"
 
-#include "myIcoPolynomial.H"
+//#include "myIcoPolynomial.H"
+
+#include "RefpropLiq.H"
+#include "RefpropGas.H"
+
+#include "hRefpropGasThermo.H"
+#include "hRefpropLiqThermo.H"
 
 #include "hPolynomialThermo.H"
 #include "polynomialTransport.H"
+
 //------------------------------
 
 #include "heRhoThermo.H"
@@ -63,6 +70,35 @@ namespace Foam
 
 /* * * * * * * * * * * * * * * private static data * * * * * * * * * * * * * */
 
+//makeThermo
+//(
+    //rhoThermo,
+    //heRhoThermo,
+    //pureMixture,
+    //constTransport,
+    //sensibleEnthalpy,
+    //hConstThermo,
+    //myIcoPolynomial,  	
+    //specie
+//);
+
+    // perfectGas,
+
+//makeThermo
+//(
+    //rhoThermo,
+    //heRhoThermo,
+    //pureMixture,
+    //constTransport,
+    //sensibleInternalEnergy,
+    //hConstThermo,
+    //myIcoPolynomial,  	
+    //specie
+//);
+
+
+    // perfectGas,
+
 makeThermo
 (
     rhoThermo,
@@ -71,11 +107,10 @@ makeThermo
     constTransport,
     sensibleEnthalpy,
     hConstThermo,
-    myIcoPolynomial,  	
+    RefpropLiq,  	
     specie
 );
 
-    // perfectGas,
 
 makeThermo
 (
@@ -85,12 +120,82 @@ makeThermo
     constTransport,
     sensibleInternalEnergy,
     hConstThermo,
-    myIcoPolynomial,  	
+    RefpropLiq,  	
     specie
 );
 
 
-    // perfectGas,
+makeThermo
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    constTransport,
+    sensibleEnthalpy,
+    hConstThermo,
+    RefpropGas,  	
+    specie
+);
+
+
+makeThermo
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    constTransport,
+    sensibleInternalEnergy,
+    hConstThermo,
+    RefpropGas,  	
+    specie
+);
+//makeThermo
+//(
+    //rhoThermo,
+    //heRhoThermo,
+    //pureMixture,
+    //sutherlandTransport,
+    //sensibleEnthalpy,
+    //hConstThermo,
+    //RefpropLiq,  	
+    //specie
+//);
+
+//makeThermo
+//(
+    //rhoThermo,
+    //heRhoThermo,
+    //pureMixture,
+    //sutherlandTransport,
+    //sensibleEnthalpy,
+    //hConstThermo,
+    //RefpropGas,  	
+    //specie
+//);
+
+makeThermo
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    constTransport,
+    sensibleEnthalpy,
+    hRefpropLiqThermo,
+    RefpropLiq,  	
+    specie
+);
+
+makeThermo
+(
+    rhoThermo,
+    heRhoThermo,
+    pureMixture,
+    constTransport,
+    sensibleEnthalpy,
+    hRefpropGasThermo,
+    RefpropGas,  	
+    specie
+);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

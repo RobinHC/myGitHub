@@ -17,7 +17,7 @@ FoamFile
 
 solvers
 {
-    alpha.air
+    alpha.air // default is explicit solver "MULES" solver unless otherwise stated  
     {
         nAlphaCorr      1;
         nAlphaSubCycles 2;
@@ -76,7 +76,7 @@ PIMPLE
 {
     nOuterCorrectors 3;
     nCorrectors      1;
-    nNonOrthogonalCorrectors 0;
+    nNonOrthogonalCorrectors 0; 
 }
 
 relaxationFactors

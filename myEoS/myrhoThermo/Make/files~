@@ -1,3 +1,0 @@
-./myIcoPolynomialThermos.C
-
-LIB = $(FOAM_USER_LIBBIN)/libmyIcoPolynomialThermo

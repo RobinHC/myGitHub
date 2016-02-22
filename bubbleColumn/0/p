@@ -17,7 +17,7 @@ FoamFile
 
 dimensions      [1 -1 -2 0 0 0 0];
 
-internalField   uniform 5e+06;
+internalField   uniform 2e+06;
 
 boundaryField
 {
@@ -28,13 +28,11 @@ boundaryField
     sideRight
     {
         type            myWaveTransmissive;
-        phi             phi.air;
-        rho             rho.air;
-        psi             thermo:psi.air;
+        psi             psi_bulk;
         gamma           1.4;
         fieldInf        100000;
         lInf            10;
-        value           uniform 5e+06;
+        value           uniform 100000;
     }
     topbottom
     {

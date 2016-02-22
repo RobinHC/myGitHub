@@ -731,6 +731,7 @@ myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/transportModels/incompressible/ln
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/transportModels/incompressible/transportModel/transportModel.H
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/transportModels/incompressible/viscosityModels/viscosityModel/viscosityModel.H
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/transportModels/twoPhaseMixture/lnInclude/twoPhaseMixture.H
+myTwoPhaseEulerFoam.dep: refpropLib/REFPROP_lib.h
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCase.H
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H
 myTwoPhaseEulerFoam.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H

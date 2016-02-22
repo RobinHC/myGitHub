@@ -20,8 +20,8 @@ thermoType
     type            heRhoThermo;
     mixture         pureMixture;
     transport       const;
-    thermo          hConst;
-    equationOfState perfectFluid;   //rho = ( 1./RT)*p + rho0
+    thermo          hRefpropLiq; //hConst;
+    equationOfState RefpropLiq;  //perfectFluid;   //rho = ( 1./RT)*p + rho0
     specie          specie;
     energy          sensibleEnthalpy;  // not absolute internal energy which takes Hf into account
 }
@@ -31,12 +31,17 @@ mixture
     specie
     {
         nMoles      1;
-        molWeight   18;
+        molWeight   44.01;
     }
     equationOfState
     {
-        R           3000;
-        rho0        1027;
+        //R           3000;
+        //rho0        1027;
+    	Tc 304.13;
+    	Vc 0.0021386;
+    	Pc 7377300;
+    	omega 0.22394;
+    
     }
     thermodynamics
     {
